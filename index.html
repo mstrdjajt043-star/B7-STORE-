@@ -1,135 +1,979 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>B7 STORE 👑</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>B7 STORE 👑 — متجر احترافي</title>
   <style>
-    /* الخلفية العامة */
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: radial-gradient(circle at top, #111 0%, #000 100%);
-      color: #fff;
-      text-align: center;
-      margin: 0;
-      overflow-x: hidden;
+    /* ====== قاعدة وتصميم عام ====== */
+    :root{
+      --bg1:#060607;
+      --bg2:#0f1724;
+      --card:#0d1114;
+      --accent1:#00d2ff;
+      --accent2:#0066ff;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Tajawal", "Poppins", system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(0,110,255,0.06), transparent),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      direction:rtl;
     }
 
-    header {
-      padding: 40px 10px;
-      font-size: 2em;
-      letter-spacing: 2px;
-      animation: fadeIn 2s ease;
+    header{
+      padding:28px 20px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      position:sticky;
+      top:0;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      z-index:40;
     }
 
-    /* أنيميشن الفتح */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo {
+      width:54px;height:54px;border-radius:12px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      box-shadow: 0 6px 20px rgba(2,132,255,0.12);
+      font-weight:800;
+    }
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    /* بحث وفلتر */
+    .controls{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .search {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:var(--glass);
+      padding:8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
+      width:320px;
+    }
+    .search input{
+      background:transparent;border:0;outline:none;color:inherit;width:100%;
+      font-size:14px;
+    }
+    .select{
+      background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:10px;color:inherit;
     }
 
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 20px;
-      animation: fadeIn 2.5s ease;
+    /* شبكة المنتجات */
+    main{padding:22px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 20px rgba(2,132,255,0.04);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover{ transform: translateY(-8px); box-shadow: 0 18px 50px rgba(2,132,255,0.08); }
+    .thumb{ width:100%; height:160px; border-radius:10px; object-fit:cover; background:#071126; display:block }
+    h3{ margin:10px 0 6px 0; font-size:16px }
+    p.desc{ margin:0 0 12px 0; color:var(--muted); font-size:13px }
+
+    .meta {display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .price { font-weight:700; font-size:15px; color:var(--accent1) }
+    .btn {
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 12px;border-radius:10px;border:0;cursor:pointer;
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:#001; font-weight:700; transition:transform .15s;
+    }
+    .btn:active{ transform:scale(.98) }
+
+    /* سلة ومودال */
+    .cart-btn{ background:transparent;border:1px solid rgba(255,255,255,0.04); padding:8px 10px;border-radius:10px;color:var(--muted) }
+    .cart-count{ background:var(--accent1); color:#001; padding:2px 7px;border-radius:999px;font-weight:700;margin-inline-start:6px;font-size:12px }
+
+    .floating-cart{
+      position:fixed; left:20px; bottom:24px; z-index:80;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+      border-radius:14px; padding:12px; border:1px solid rgba(255,255,255,0.04);
+      box-shadow:0 10px 40px rgba(2,132,255,0.08);
     }
 
-    .product {
-      background: rgba(30, 30, 30, 0.9);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 15px rgba(0, 200, 255, 0.2);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    /* مودال */
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;place-items:center;z-index:100;
+      padding:20px;
     }
-
-    .product:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 0 25px rgba(0, 200, 255, 0.5);
+    .modal{
+      width:100%;max-width:720px;background:linear-gradient(180deg,#081016,#071021);
+      border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);
     }
+    .modal h2{margin-top:0}
+    .cart-list{ max-height:320px; overflow:auto; margin:12px 0; border-radius:8px }
+    .cart-item{ display:flex; gap:12px; align-items:center; padding:10px; border-bottom:1px dashed rgba(255,255,255,0.02) }
+    .cart-item img{ width:64px; height:48px; object-fit:cover; border-radius:8px }
 
-    .product img {
-      width: 100%;
-      border-radius: 10px;
-    }
+    .actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px }
 
-    button {
-      background: linear-gradient(45deg, #00bfff, #0077ff);
-      border: none;
-      padding: 10px 18px;
-      color: white;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+    /* رسائل صغيرة */
+    .note{ font-size:13px;color:var(--muted); margin-top:6px }
 
-    button:hover {
-      background: linear-gradient(45deg, #0077ff, #00bfff);
-      transform: scale(1.05);
-    }
-
-    footer {
-      margin-top: 40px;
-      padding: 20px;
-      font-size: 0.9em;
-      background: #0a0a0a;
-      border-top: 1px solid #222;
-    }
-
-    /* حركة هيدر */
-    .shine {
-      background: linear-gradient(90deg, #fff, #00bfff, #fff);
-      -webkit-background-clip: text;
-      color: transparent;
-      background-size: 200% auto;
-      animation: shine 3s linear infinite;
-    }
-
-    @keyframes shine {
-      to { background-position: 200% center; }
+    /* تجاوب */
+    @media(max-width:520px){
+      .search{width:170px}
+      header{flex-direction:column;align-items:stretch;gap:12px}
+      .controls{justify-content:space-between}
     }
   </style>
 </head>
-
 <body>
   <header>
-    <h1 class="shine">👑 B7 STORE 👑</h1>
-    <p>أفضل متجر لخدمات Roblox والمنتجات الرقمية ✨</p>
+    <div class="brand">
+      <div class="logo">B7</div>
+      <div>
+        <h1>B7 STORE 👑</h1>
+        <p>متجر خدمات Roblox وخرائط احترافي</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search" role="search" aria-label="بحث عن منتجات">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="opacity:.8"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="searchInput" placeholder="ابحث عن اسم، قسم، خريطة..." />
+      </div>
+
+      <select id="categorySelect" class="select" aria-label="فلتر حسب القسم">
+        <option value="all">كل الأقسام</option>
+        <option value="farm">ماب المزرعة</option>
+        <option value="theft">ماب السرقة</option>
+        <option value="services">خدمات/سكربت</option>
+      </select>
+
+      <button class="cart-btn" id="openCartBtn" title="عرض السلة">
+        سلة المشتريات <span id="cartCount" class="cart-count" style="display:none">0</span>
+      </button>
+    </div>
   </header>
 
-  <section class="products">
-    <div class="product">
-      <img src="https://cdn.discordapp.com/attachments/1431692051375853598/1436143911369314485/21_09AAED2.gif" alt="خدمة سكربت">
-      <h3>تطوير سكربت مخصص 🔥</h3>
-      <p>نصمم سكربت احترافي لمابك في Roblox بأعلى جودة.</p>
-      <form action="https://www.paypal.com/paypalme/USERNAME" method="get" target="_blank">
-        <button type="submit">💳 اشتري الآن</button>
-      </form>
-    </div>
+  <main>
+    <section style="margin-bottom:16px">
+      <h2 style="margin:0 0 8px 0">الأقسام</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="filterBy('all')">الكل</button>
+        <button class="btn" onclick="filterBy('farm')">ماب المزرعة</button>
+        <button class="btn" onclick="filterBy('theft')">ماب السرقة</button>
+        <button class="btn" onclick="filterBy('services')">خدمات</button>
+      </div>
+      <p class="note">اضغط على المنتج لفتح تفاصيله أو أضفه مباشرةً إلى السلة.</p>
+    </section>
 
-    <div class="product">
-      <img src="https://cdn.discordapp.com/attachments/1431692051375853598/1436143911369314485/21_09AAED2.gif" alt="تصميم سكن">
-      <h3>تصميم سكن Roblox 🎨</h3>
-      <p>تصميم احترافي وسريع حسب ذوقك.</p>
-      <form action="https://www.paypal.com/paypalme/USERNAME" method="get" target="_blank">
-        <button type="submit">💵 اطلب الآن</button>
-      </form>
-    </div>
+    <section class="grid" id="productsGrid" aria-live="polite">
+      <!-- المنتجات تُملأ برمجياً -->
+    </section>
+  </main>
 
-    <div class="product">
-      <img src="https://cdn.discordapp.com/attachments/1431692051375853598/1436143911369314485/21_09AAED2.gif" alt="خدمة باك">
-      <h3>خدمة باك سكربت ⚙️</h3>
-      <p>نصلح لك السكربتات المكسورة أو فيها أخطاء.</p>
-      <form action="https://www.paypal.com/paypalme/USERNAME" method="get" target="_blank">
-        <button type="submit">🔧 اطلب الخدمة</button>
-      </form>
+  <!-- سلة عائمة -->
+  <div class="floating-cart" role="region" aria-label="سلة عائمة">
+    <div style="display:flex;gap:10px;align-items:center">
+      <strong>الإجمالي:</strong>
+      <div id="totalPrice" style="font-weight:800;color:var(--accent1)">0.00 MAD</div>
+      <button id="checkoutBtn" class="btn" style="margin-inline-start:8px">🧾 الدفع</button>
     </div>
-  </section>
+    <div style="margin-top:6px;font-size:13px;color:var(--muted)">طريقة دفع باي بال متاحة — غيّر حسابك في الكود.</div>
+  </div>
 
-  <footer>
-    © 2025 B7 STORE 👑 - جميع الحقوق محفوظة
+  <!-- مودال السلة -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2>سلة المشتريات</h2>
+      <div class="cart-list" id="cartList"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div>الإجمالي: <strong id="modalTotal">0.00 MAD</strong></div>
+          <div class="note">اضغط دفع لفتح صفحة PayPal. تأكد من حساب PayPal.me مضبوط (PAYPAL_USERNAME).</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="modalCheckoutBtn">ادفع عبر PayPal</button>
+          <button class="cart-btn" id="closeModalBtn">إغلاق</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted);border-top:1px solid rgba(255,255,255,0.02);margin-top:30px">
+    © 2025 B7 STORE 👑 — جميع الحقوق محفوظة
   </footer>
+
+  <script>
+    /**********************************************
+     * IMPORTANT:
+     * ضع هنا اسم حساب PayPal.me الخاص بك بدون "/" نهائي،
+     * مثال: const PAYPAL_USERNAME = "myPayPalName"
+     **********************************************/
+    const PAYPAL_USERNAME = "USERNAME_HERE"; // <-- غيّره قبل النشر
+
+    // بيانات المنتجات — عدل أو زد كما تريد
+    const products = [
+      // ماب المزرعة
+      { id: "farm-1", title: "كريفين", desc: "حيوان نادر للمزرعة — تأثيرات خاصة.", price: 15.00, currency:"MAD", category:"farm", map:"ماب المزرعة", img:"https://i.imgur.com/3Q7pXbW.png" },
+      { id: "farm-2", title: "الخين", desc: "حيوان مزرعة سريع ويعطي موارد.", price: 12.00, currency:"MAD", category:"farm", map:"ماب المزرعة", img:"https://i.imgur.com/7GQ7Y2m.png" },
+
+      // ماب السرقة
+      { id: "theft-1", title: "karkirkur", desc: "وحش من ماب السرقة — سلوك هجومي.", price: 30.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/Q9k1ZgE.png" },
+      { id: "theft-2", title: "job job sahur", desc: "حيوان سري في خريطة السرقة.", price: 28.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/8eKXWqR.png" },
+      { id: "theft-3", title: "saminini spayderini", desc: "عنصر نادر، يشبه العنكبوت.", price: 35.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/0Z0p1yQ.png" },
+      { id: "theft-4", title: "سسةي", desc: "حيوان خاص داخل ماب السرقة.", price: 22.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/2zCq9bE.png" },
+
+      // خدمات / سكربت
+      { id: "svc-1", title: "تطوير سكربت مخصص", desc: "سكربت ماب كامل مع نظام نقاط وسوق.", price: 120.00, currency:"MAD", category:"services", map:"خدمات", img:"https://i.imgur.com/4M7IWwP.png" },
+      { id: "svc-2", title: "تصميم سكن وواجهة متجر", desc: "واجهة متكاملة للموبايل مع أنميشن.", price: 60.00, currency:"MAD", category:"services", map:"خدمات", img:"https://i.imgur.com/NmG2ZzK.png" },
+    ];
+
+    // حالة السلة
+    let cart = {};
+
+    // عناصر الـ DOM
+    const productsGrid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const cartCountEl = document.getElementById('cartCount');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const modal = document.getElementById('modal');
+    const cartList = document.getElementById('cartList');
+    const modalTotal = document.getElementById('modalTotal');
+
+    // رندر المنتجات
+    function renderProducts(filterText = '', filterCategory = 'all'){
+      productsGrid.innerHTML = '';
+      const q = filterText.trim().toLowerCase();
+
+      const visible = products.filter(p => {
+        const matchesCategory = (filterCategory === 'all') || (p.category === filterCategory);
+        const matchesSearch = !q || (`${p.title} ${p.desc} ${p.category} ${p.map}`).toLowerCase().includes(q);
+        return matchesCategory && matchesSearch;
+      });
+
+      if(visible.length === 0){
+        productsGrid.innerHTML = `<div style="grid-column:1/-1;padding:40px;border-radius:12px;background:rgba(255,255,255,0.01);text-align:center;color:var(--muted)">لا توجد نتائج للبحث</div>`;
+        return;
+      }
+
+      visible.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <img class="thumb" src="${p.img}" alt="${p.title}" loading="lazy" />
+          <h3>${p.title}</h3>
+          <p class="desc">${p.desc} — <strong>${p.map}</strong></p>
+          <div class="meta">
+            <div class="price">${p.price.toFixed(2)} ${p.currency}</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="addToCart('${p.id}')">أضف للسلة</button>
+              <button class="cart-btn" onclick="openDetails('${p.id}')">عرض</button>
+            </div>
+          </div>
+        `;
+        productsGrid.appendChild(card);
+      });
+    }
+
+    // فتح تفاصيل المنتج (نموذج بسيط)
+    function openDetails(id){
+      const p = products.find(x => x.id === id);
+      if(!p) return alert('خطأ: المنتج غير موجود');
+      // عرض مودال مبسط باستخدام alert (يمكن تطويره لاحقاً)
+      const more = `${p.title}\n\n${p.desc}\nالسعر: ${p.price.toFixed(2)} ${p.currency}\nالخريطة: ${p.map}\n\nهل تريد إضافة هذا المنتج للسلة؟`;
+      if(confirm(more)){
+        addToCart(id);
+      }
+    }
+
+    // إضافة للسلة
+    function addToCart(id){
+      const p = products.find(x => x.id === id);
+      if(!p) return;
+      cart[id] = cart[id] || { ...p, qty: 0 };
+      cart[id].qty += 1;
+      updateCartUI();
+      // لمسة بصوت/اهتزاز قصيرة إن أردت (متصفح يدعم)
+      try{ if(navigator.vibrate) navigator.vibrate(60); } catch(e){}
+    }
+
+    // إزالة/تعديل
+    function removeFromCart(id){
+      if(!cart[id]) return;
+      delete cart[id];
+      updateCartUI();
+    }
+    function changeQty(id, delta){
+      if(!cart[id]) return;
+      cart[id].qty += delta;
+      if(cart[id].qty <= 0) delete cart[id];
+      updateCartUI();
+    }
+
+    // حساب الإجمالي وعرض
+    function computeTotal(){
+      let total = 0;
+      Object.values(cart).forEach(item => total += item.price * item.qty);
+      return total;
+    }
+
+    function updateCartUI(){
+      const keys = Object.keys(cart);
+      if(keys.length === 0){
+        cartCountEl.style.display = 'none';
+        cartCountEl.textContent = '0';
+      } else {
+        cartCountEl.style.display = 'inline-block';
+        const qty = keys.reduce((s,k)=> s + cart[k].qty,0);
+        cartCountEl.textContent = qty;
+      }
+      const total = computeTotal();
+      totalPriceEl.textContent = total.toFixed(2) + " MAD";
+      modalTotal.textContent = total.toFixed(2) + " MAD";
+      // رندر قائمة المودال
+      renderCartList();
+    }
+
+    function renderCartList(){
+      cartList.innerHTML = '';
+      const keys = Object.keys(cart);
+      if(keys.length === 0){
+        cartList.innerHTML = `<div style="padding:20px;color:var(--muted)">السلة فارغة</div>`;
+        return;
+      }
+      keys.forEach(k => {
+        const it = cart[k];
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <img src="${it.img}" alt="${it.title}" />
+          <div style="flex:1;text-align:right">
+            <div style="font-weight:700">${it.title}</div>
+            <div style="color:var(--muted);font-size:13px">${it.price.toFixed(2)} ${it.currency} × ${it.qty}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+            <button class="cart-btn" onclick="changeQty('${k}',1)">+</button>
+            <button class="cart-btn" onclick="changeQty('${k}',-1)">−</button>
+            <button class="cart-btn" onclick="removeFromCart('${k}')">حذف</button>
+          </div>
+        `;
+        cartList.appendChild(div);
+      });
+    }
+
+    // فلترة من أزرار الأقسام
+    function filterBy(category){
+      categorySelect.value = category === 'all' ? 'all' : category;
+      renderProducts(searchInput.value, categorySelect.value);
+    }
+
+    // أحداث البحث والفلتر
+    searchInput.addEventListener('input', () => {
+      renderProducts(searchInput.value, categorySelect.value);
+    });
+    categorySelect.addEventListener('change', () => {
+      renderProducts(searchInput.value, categorySelect.value);
+    });
+
+    // فتح/إغلاق المودال
+    document.getElementById('openCartBtn').addEventListener('click', () => {
+      modal.style.display = 'grid';
+      modal.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    function closeModal(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+    }
+    // اغلاق عند الضغط خارج المودال
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) closeModal();
+    });
+
+    // الدفع — يفتح نافذة PayPal.me أو يعلّق إن لم يتم تحديد الحساب
+    function checkout(){
+      const total = computeTotal();
+      if(total <= 0){
+        alert("السلة فارغة، أضف منتجات قبل الدفع.");
+        return;
+      }
+      if(!PAYPAL_USERNAME || PAYPAL_USERNAME === "USERNAME_HERE"){
+        // تحذير واضح وليس رفضاً
+        const ok = confirm("لم تضف اسم حساب PayPal.me في الكود. اضغط OK لنسخ قيمة الدفع (يمكنك وضع اسم حسابك في الكود). اضغط Cancel لإلغاء.");
+        if(!ok) return;
+        // انسخ نص الفاتورة لنسخ يدوي
+        copyToClipboard(`فاتورة من B7 STORE: المبلغ ${total.toFixed(2)} MAD`);
+        alert("تم نسخ ملخص المبلغ إلى الحافظة. بعد ذلك افتح PayPal.me/اسمك وادخل المبلغ يدوياً.");
+        return;
+      }
+
+      // تكوين رابط PayPal.me — ملاحظة: بعض حسابات PayPal.me تدعم إضافة المبلغ عبر /{amount}{currency}
+      // مثال: https://paypal.me/USERNAME/25MAD
+      // نستخدم ذلك لكن نعرض أيضاً تنبيه للمستخدم للتأكد.
+      const amountStr = encodeURIComponent(total.toFixed(2) + "MAD");
+      const url = `https://paypal.me/${encodeURIComponent(PAYPAL_USERNAME)}/${amountStr}`;
+
+      // نفتح الرابط في نافذة جديدة
+      window.open(url, '_blank');
+
+      // اقتراح تسجيل طلب أو إرسال تفاصيل (يمكن ربط بخادم لاحقاً)
+    }
+
+    // زر الدفع في المودال والزر العائم
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      // افتح المودال أولاً
+      modal.style.display = 'grid';
+      modal.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('modalCheckoutBtn').addEventListener('click', checkout);
+
+    // مساعدة - نسخ للحافظة
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).catch(()=>{});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        ta.remove();
+      }
+    }
+
+    // رندر أولي
+    renderProducts();
+
+    // اختياري: تخزين السلة في localStorage حتى لا تضيع
+    function saveCart(){
+      localStorage.setItem('b7_cart', JSON.stringify(cart));
+    }
+    function loadCart(){
+      try{
+        const s = localStorage.getItem('b7_cart');
+        if(s) cart = JSON.parse(s);
+      }catch(e){ cart = {}; }
+      updateCartUI();
+    }
+    window.addEventListener('beforeunload', saveCart);
+    loadCart();
+
+    // فحص أخطاء بسيطة (لضمان عدم وجود أخطاء شائعة)
+    window.addEventListener('error', (e) => {
+      console.error('Runtime error:', e.error || e.message);
+      // لا نُظهر للمستخدم شيئاً مزعجاً لكن يمكن إرسال هذا للخادم لاحقاً
+    });
+  </script>
 </body>
-</html>
+        </htm<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>B7 STORE 👑 — متجر احترافي</title>
+  <style>
+    /* ====== قاعدة وتصميم عام ====== */
+    :root{
+      --bg1:#060607;
+      --bg2:#0f1724;
+      --card:#0d1114;
+      --accent1:#00d2ff;
+      --accent2:#0066ff;
+      --muted:#9aa4b2;
+      --glass: rgba(255,255,255,0.03);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: "Tajawal", "Poppins", system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(0,110,255,0.06), transparent),
+                  linear-gradient(180deg,var(--bg1),var(--bg2));
+      color:#e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      direction:rtl;
+    }
+
+    header{
+      padding:28px 20px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+      justify-content:space-between;
+      position:sticky;
+      top:0;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      z-index:40;
+    }
+
+    .brand {
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .logo {
+      width:54px;height:54px;border-radius:12px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      box-shadow: 0 6px 20px rgba(2,132,255,0.12);
+      font-weight:800;
+    }
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    /* بحث وفلتر */
+    .controls{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+    .search {
+      display:flex;
+      gap:8px;
+      align-items:center;
+      background:var(--glass);
+      padding:8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
+      width:320px;
+    }
+    .search input{
+      background:transparent;border:0;outline:none;color:inherit;width:100%;
+      font-size:14px;
+    }
+    .select{
+      background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:10px;color:inherit;
+    }
+
+    /* شبكة المنتجات */
+    main{padding:22px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit,minmax(260px,1fr));
+      gap:18px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+      border-radius:14px;padding:14px;border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 6px 20px rgba(2,132,255,0.04);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover{ transform: translateY(-8px); box-shadow: 0 18px 50px rgba(2,132,255,0.08); }
+    .thumb{ width:100%; height:160px; border-radius:10px; object-fit:cover; background:#071126; display:block }
+    h3{ margin:10px 0 6px 0; font-size:16px }
+    p.desc{ margin:0 0 12px 0; color:var(--muted); font-size:13px }
+
+    .meta {display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .price { font-weight:700; font-size:15px; color:var(--accent1) }
+    .btn {
+      display:inline-flex; gap:8px; align-items:center;
+      padding:8px 12px;border-radius:10px;border:0;cursor:pointer;
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:#001; font-weight:700; transition:transform .15s;
+    }
+    .btn:active{ transform:scale(.98) }
+
+    /* سلة ومودال */
+    .cart-btn{ background:transparent;border:1px solid rgba(255,255,255,0.04); padding:8px 10px;border-radius:10px;color:var(--muted) }
+    .cart-count{ background:var(--accent1); color:#001; padding:2px 7px;border-radius:999px;font-weight:700;margin-inline-start:6px;font-size:12px }
+
+    .floating-cart{
+      position:fixed; left:20px; bottom:24px; z-index:80;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));
+      border-radius:14px; padding:12px; border:1px solid rgba(255,255,255,0.04);
+      box-shadow:0 10px 40px rgba(2,132,255,0.08);
+    }
+
+    /* مودال */
+    .modal-backdrop{
+      position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;place-items:center;z-index:100;
+      padding:20px;
+    }
+    .modal{
+      width:100%;max-width:720px;background:linear-gradient(180deg,#081016,#071021);
+      border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.04);
+    }
+    .modal h2{margin-top:0}
+    .cart-list{ max-height:320px; overflow:auto; margin:12px 0; border-radius:8px }
+    .cart-item{ display:flex; gap:12px; align-items:center; padding:10px; border-bottom:1px dashed rgba(255,255,255,0.02) }
+    .cart-item img{ width:64px; height:48px; object-fit:cover; border-radius:8px }
+
+    .actions{ display:flex; gap:8px; justify-content:flex-end; margin-top:12px }
+
+    /* رسائل صغيرة */
+    .note{ font-size:13px;color:var(--muted); margin-top:6px }
+
+    /* تجاوب */
+    @media(max-width:520px){
+      .search{width:170px}
+      header{flex-direction:column;align-items:stretch;gap:12px}
+      .controls{justify-content:space-between}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">B7</div>
+      <div>
+        <h1>B7 STORE 👑</h1>
+        <p>متجر خدمات Roblox وخرائط احترافي</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search" role="search" aria-label="بحث عن منتجات">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="opacity:.8"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="searchInput" placeholder="ابحث عن اسم، قسم، خريطة..." />
+      </div>
+
+      <select id="categorySelect" class="select" aria-label="فلتر حسب القسم">
+        <option value="all">كل الأقسام</option>
+        <option value="farm">ماب المزرعة</option>
+        <option value="theft">ماب السرقة</option>
+        <option value="services">خدمات/سكربت</option>
+      </select>
+
+      <button class="cart-btn" id="openCartBtn" title="عرض السلة">
+        سلة المشتريات <span id="cartCount" class="cart-count" style="display:none">0</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section style="margin-bottom:16px">
+      <h2 style="margin:0 0 8px 0">الأقسام</h2>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" onclick="filterBy('all')">الكل</button>
+        <button class="btn" onclick="filterBy('farm')">ماب المزرعة</button>
+        <button class="btn" onclick="filterBy('theft')">ماب السرقة</button>
+        <button class="btn" onclick="filterBy('services')">خدمات</button>
+      </div>
+      <p class="note">اضغط على المنتج لفتح تفاصيله أو أضفه مباشرةً إلى السلة.</p>
+    </section>
+
+    <section class="grid" id="productsGrid" aria-live="polite">
+      <!-- المنتجات تُملأ برمجياً -->
+    </section>
+  </main>
+
+  <!-- سلة عائمة -->
+  <div class="floating-cart" role="region" aria-label="سلة عائمة">
+    <div style="display:flex;gap:10px;align-items:center">
+      <strong>الإجمالي:</strong>
+      <div id="totalPrice" style="font-weight:800;color:var(--accent1)">0.00 MAD</div>
+      <button id="checkoutBtn" class="btn" style="margin-inline-start:8px">🧾 الدفع</button>
+    </div>
+    <div style="margin-top:6px;font-size:13px;color:var(--muted)">طريقة دفع باي بال متاحة — غيّر حسابك في الكود.</div>
+  </div>
+
+  <!-- مودال السلة -->
+  <div id="modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal" role="document">
+      <h2>سلة المشتريات</h2>
+      <div class="cart-list" id="cartList"></div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div>الإجمالي: <strong id="modalTotal">0.00 MAD</strong></div>
+          <div class="note">اضغط دفع لفتح صفحة PayPal. تأكد من حساب PayPal.me مضبوط (PAYPAL_USERNAME).</div>
+        </div>
+        <div class="actions">
+          <button class="btn" id="modalCheckoutBtn">ادفع عبر PayPal</button>
+          <button class="cart-btn" id="closeModalBtn">إغلاق</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer style="padding:18px;text-align:center;color:var(--muted);border-top:1px solid rgba(255,255,255,0.02);margin-top:30px">
+    © 2025 B7 STORE 👑 — جميع الحقوق محفوظة
+  </footer>
+
+  <script>
+    /**********************************************
+     * IMPORTANT:
+     * ضع هنا اسم حساب PayPal.me الخاص بك بدون "/" نهائي،
+     * مثال: const PAYPAL_USERNAME = "myPayPalName"
+     **********************************************/
+    const PAYPAL_USERNAME = "USERNAME_HERE"; // <-- غيّره قبل النشر
+
+    // بيانات المنتجات — عدل أو زد كما تريد
+    const products = [
+      // ماب المزرعة
+      { id: "farm-1", title: "كريفين", desc: "حيوان نادر للمزرعة — تأثيرات خاصة.", price: 15.00, currency:"MAD", category:"farm", map:"ماب المزرعة", img:"https://i.imgur.com/3Q7pXbW.png" },
+      { id: "farm-2", title: "الخين", desc: "حيوان مزرعة سريع ويعطي موارد.", price: 12.00, currency:"MAD", category:"farm", map:"ماب المزرعة", img:"https://i.imgur.com/7GQ7Y2m.png" },
+
+      // ماب السرقة
+      { id: "theft-1", title: "karkirkur", desc: "وحش من ماب السرقة — سلوك هجومي.", price: 30.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/Q9k1ZgE.png" },
+      { id: "theft-2", title: "job job sahur", desc: "حيوان سري في خريطة السرقة.", price: 28.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/8eKXWqR.png" },
+      { id: "theft-3", title: "saminini spayderini", desc: "عنصر نادر، يشبه العنكبوت.", price: 35.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/0Z0p1yQ.png" },
+      { id: "theft-4", title: "سسةي", desc: "حيوان خاص داخل ماب السرقة.", price: 22.00, currency:"MAD", category:"theft", map:"ماب السرقة", img:"https://i.imgur.com/2zCq9bE.png" },
+
+      // خدمات / سكربت
+      { id: "svc-1", title: "تطوير سكربت مخصص", desc: "سكربت ماب كامل مع نظام نقاط وسوق.", price: 120.00, currency:"MAD", category:"services", map:"خدمات", img:"https://i.imgur.com/4M7IWwP.png" },
+      { id: "svc-2", title: "تصميم سكن وواجهة متجر", desc: "واجهة متكاملة للموبايل مع أنميشن.", price: 60.00, currency:"MAD", category:"services", map:"خدمات", img:"https://i.imgur.com/NmG2ZzK.png" },
+    ];
+
+    // حالة السلة
+    let cart = {};
+
+    // عناصر الـ DOM
+    const productsGrid = document.getElementById('productsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const categorySelect = document.getElementById('categorySelect');
+    const cartCountEl = document.getElementById('cartCount');
+    const totalPriceEl = document.getElementById('totalPrice');
+    const modal = document.getElementById('modal');
+    const cartList = document.getElementById('cartList');
+    const modalTotal = document.getElementById('modalTotal');
+
+    // رندر المنتجات
+    function renderProducts(filterText = '', filterCategory = 'all'){
+      productsGrid.innerHTML = '';
+      const q = filterText.trim().toLowerCase();
+
+      const visible = products.filter(p => {
+        const matchesCategory = (filterCategory === 'all') || (p.category === filterCategory);
+        const matchesSearch = !q || (`${p.title} ${p.desc} ${p.category} ${p.map}`).toLowerCase().includes(q);
+        return matchesCategory && matchesSearch;
+      });
+
+      if(visible.length === 0){
+        productsGrid.innerHTML = `<div style="grid-column:1/-1;padding:40px;border-radius:12px;background:rgba(255,255,255,0.01);text-align:center;color:var(--muted)">لا توجد نتائج للبحث</div>`;
+        return;
+      }
+
+      visible.forEach(p => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <img class="thumb" src="${p.img}" alt="${p.title}" loading="lazy" />
+          <h3>${p.title}</h3>
+          <p class="desc">${p.desc} — <strong>${p.map}</strong></p>
+          <div class="meta">
+            <div class="price">${p.price.toFixed(2)} ${p.currency}</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn" onclick="addToCart('${p.id}')">أضف للسلة</button>
+              <button class="cart-btn" onclick="openDetails('${p.id}')">عرض</button>
+            </div>
+          </div>
+        `;
+        productsGrid.appendChild(card);
+      });
+    }
+
+    // فتح تفاصيل المنتج (نموذج بسيط)
+    function openDetails(id){
+      const p = products.find(x => x.id === id);
+      if(!p) return alert('خطأ: المنتج غير موجود');
+      // عرض مودال مبسط باستخدام alert (يمكن تطويره لاحقاً)
+      const more = `${p.title}\n\n${p.desc}\nالسعر: ${p.price.toFixed(2)} ${p.currency}\nالخريطة: ${p.map}\n\nهل تريد إضافة هذا المنتج للسلة؟`;
+      if(confirm(more)){
+        addToCart(id);
+      }
+    }
+
+    // إضافة للسلة
+    function addToCart(id){
+      const p = products.find(x => x.id === id);
+      if(!p) return;
+      cart[id] = cart[id] || { ...p, qty: 0 };
+      cart[id].qty += 1;
+      updateCartUI();
+      // لمسة بصوت/اهتزاز قصيرة إن أردت (متصفح يدعم)
+      try{ if(navigator.vibrate) navigator.vibrate(60); } catch(e){}
+    }
+
+    // إزالة/تعديل
+    function removeFromCart(id){
+      if(!cart[id]) return;
+      delete cart[id];
+      updateCartUI();
+    }
+    function changeQty(id, delta){
+      if(!cart[id]) return;
+      cart[id].qty += delta;
+      if(cart[id].qty <= 0) delete cart[id];
+      updateCartUI();
+    }
+
+    // حساب الإجمالي وعرض
+    function computeTotal(){
+      let total = 0;
+      Object.values(cart).forEach(item => total += item.price * item.qty);
+      return total;
+    }
+
+    function updateCartUI(){
+      const keys = Object.keys(cart);
+      if(keys.length === 0){
+        cartCountEl.style.display = 'none';
+        cartCountEl.textContent = '0';
+      } else {
+        cartCountEl.style.display = 'inline-block';
+        const qty = keys.reduce((s,k)=> s + cart[k].qty,0);
+        cartCountEl.textContent = qty;
+      }
+      const total = computeTotal();
+      totalPriceEl.textContent = total.toFixed(2) + " MAD";
+      modalTotal.textContent = total.toFixed(2) + " MAD";
+      // رندر قائمة المودال
+      renderCartList();
+    }
+
+    function renderCartList(){
+      cartList.innerHTML = '';
+      const keys = Object.keys(cart);
+      if(keys.length === 0){
+        cartList.innerHTML = `<div style="padding:20px;color:var(--muted)">السلة فارغة</div>`;
+        return;
+      }
+      keys.forEach(k => {
+        const it = cart[k];
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <img src="${it.img}" alt="${it.title}" />
+          <div style="flex:1;text-align:right">
+            <div style="font-weight:700">${it.title}</div>
+            <div style="color:var(--muted);font-size:13px">${it.price.toFixed(2)} ${it.currency} × ${it.qty}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+            <button class="cart-btn" onclick="changeQty('${k}',1)">+</button>
+            <button class="cart-btn" onclick="changeQty('${k}',-1)">−</button>
+            <button class="cart-btn" onclick="removeFromCart('${k}')">حذف</button>
+          </div>
+        `;
+        cartList.appendChild(div);
+      });
+    }
+
+    // فلترة من أزرار الأقسام
+    function filterBy(category){
+      categorySelect.value = category === 'all' ? 'all' : category;
+      renderProducts(searchInput.value, categorySelect.value);
+    }
+
+    // أحداث البحث والفلتر
+    searchInput.addEventListener('input', () => {
+      renderProducts(searchInput.value, categorySelect.value);
+    });
+    categorySelect.addEventListener('change', () => {
+      renderProducts(searchInput.value, categorySelect.value);
+    });
+
+    // فتح/إغلاق المودال
+    document.getElementById('openCartBtn').addEventListener('click', () => {
+      modal.style.display = 'grid';
+      modal.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    function closeModal(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+    }
+    // اغلاق عند الضغط خارج المودال
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) closeModal();
+    });
+
+    // الدفع — يفتح نافذة PayPal.me أو يعلّق إن لم يتم تحديد الحساب
+    function checkout(){
+      const total = computeTotal();
+      if(total <= 0){
+        alert("السلة فارغة، أضف منتجات قبل الدفع.");
+        return;
+      }
+      if(!PAYPAL_USERNAME || PAYPAL_USERNAME === "USERNAME_HERE"){
+        // تحذير واضح وليس رفضاً
+        const ok = confirm("لم تضف اسم حساب PayPal.me في الكود. اضغط OK لنسخ قيمة الدفع (يمكنك وضع اسم حسابك في الكود). اضغط Cancel لإلغاء.");
+        if(!ok) return;
+        // انسخ نص الفاتورة لنسخ يدوي
+        copyToClipboard(`فاتورة من B7 STORE: المبلغ ${total.toFixed(2)} MAD`);
+        alert("تم نسخ ملخص المبلغ إلى الحافظة. بعد ذلك افتح PayPal.me/اسمك وادخل المبلغ يدوياً.");
+        return;
+      }
+
+      // تكوين رابط PayPal.me — ملاحظة: بعض حسابات PayPal.me تدعم إضافة المبلغ عبر /{amount}{currency}
+      // مثال: https://paypal.me/USERNAME/25MAD
+      // نستخدم ذلك لكن نعرض أيضاً تنبيه للمستخدم للتأكد.
+      const amountStr = encodeURIComponent(total.toFixed(2) + "MAD");
+      const url = `https://paypal.me/${encodeURIComponent(PAYPAL_USERNAME)}/${amountStr}`;
+
+      // نفتح الرابط في نافذة جديدة
+      window.open(url, '_blank');
+
+      // اقتراح تسجيل طلب أو إرسال تفاصيل (يمكن ربط بخادم لاحقاً)
+    }
+
+    // زر الدفع في المودال والزر العائم
+    document.getElementById('checkoutBtn').addEventListener('click', () => {
+      // افتح المودال أولاً
+      modal.style.display = 'grid';
+      modal.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('modalCheckoutBtn').addEventListener('click', checkout);
+
+    // مساعدة - نسخ للحافظة
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).catch(()=>{});
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = text; document.body.appendChild(ta); ta.select();
+        try{ document.execCommand('copy'); }catch(e){}
+        ta.remove();
+      }
+    }
+
+    // رندر أولي
+    renderProducts();
+
+    // اختياري: تخزين السلة في localStorage حتى لا تضيع
+    function saveCart(){
+      localStorage.setItem('b7_cart', JSON.stringify(cart));
+    }
+    function loadCart(){
+      try{
+        const s = localStorage.getItem('b7_cart');
+        if(s) cart = JSON.parse(s);
+      }catch(e){ cart = {}; }
+      updateCartUI();
+    }
+    window.addEventListener('beforeunload', saveCart);
+    loadCart();
+
+    // فحص أخطاء بسيطة (لضمان عدم وجود أخطاء شائعة)
+    window.addEventListener('error', (e) => {
+      console.error('Runtime error:', e.error || e.message);
+      // لا نُظهر للمستخدم شيئاً مزعجاً لكن يمكن إرسال هذا للخادم لاحقاً
+    });
+  </script>
+</body>
+  </html>
